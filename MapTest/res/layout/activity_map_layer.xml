@@ -1,0 +1,66 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="250dip"
+    android:layout_height="300dip"
+    android:orientation="horizontal" >
+
+    <Button
+        android:id="@+id/confirmButton"
+        android:layout_width="100dip"
+        android:layout_height="wrap_content"
+        android:layout_alignLeft="@+id/textView1"
+        android:layout_alignParentBottom="true"
+        android:text="OK" />
+
+    <Button
+        android:id="@+id/cancelButton"
+        android:layout_width="100dip"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
+        android:layout_alignParentRight="true"
+        android:text="Cancel" />
+
+    <TextView
+        android:id="@+id/mapLayerTitle"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignBaseline="@+id/textView1"
+        android:layout_alignBottom="@+id/textView1"
+        android:layout_alignParentLeft="true"
+        android:text="Map Layer"
+        android:textAppearance="?android:attr/textAppearanceLarge" />
+
+    <RadioGroup
+        android:id="@+id/mapLayerRadioGroup"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentLeft="true"
+        android:layout_below="@+id/mapLayerTitle"
+        android:layout_marginTop="17dp" >
+
+        <RadioButton
+            android:id="@+id/normalRadio"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Normal" />
+
+        <RadioButton
+            android:id="@+id/satelliteRadio"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Satellite" />
+
+        <RadioButton
+            android:id="@+id/hybridRadio"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Hybrid" />
+
+        <RadioButton
+            android:id="@+id/terrainRadio"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Terrain" />
+    </RadioGroup>
+
+</RelativeLayout>
