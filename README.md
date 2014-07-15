@@ -17,7 +17,7 @@ Need To Haves:
 	3.On long map circle setting manipulation (ex: delete circle locally)
 	
 
-Nice To Haves
+Nice To Haves:
 	1.Prettier circles
 	2.Improved/Prettier/Intuitive UI 
 	3.Proper functioning with landscape mode (without resetting the activity)
