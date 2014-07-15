@@ -38,7 +38,7 @@ proguard/
 
 # Log Files
 *.log
-*.properties
+*project.properties
 
 # Eclipse
 *.project
