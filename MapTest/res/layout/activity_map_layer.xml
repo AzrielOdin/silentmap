@@ -8,7 +8,6 @@
         android:id="@+id/confirmButton"
         android:layout_width="100dip"
         android:layout_height="wrap_content"
-        android:layout_alignLeft="@+id/textView1"
         android:layout_alignParentBottom="true"
         android:text="OK" />
 
@@ -24,8 +23,6 @@
         android:id="@+id/mapLayerTitle"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_alignBaseline="@+id/textView1"
-        android:layout_alignBottom="@+id/textView1"
         android:layout_alignParentLeft="true"
         android:text="Map Layer"
         android:textAppearance="?android:attr/textAppearanceLarge" />
