@@ -1,4 +1,4 @@
-package com.example.maptest;
+package com.example.maptest.services;
 
 import java.util.ArrayList;
 

@@ -4,14 +4,17 @@ import java.util.ArrayList;
 
 import android.app.Activity;
 import android.app.FragmentManager;
+import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
+import android.content.ServiceConnection;
 import android.content.SharedPreferences;
 import android.location.Location;
 import android.media.AudioManager;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.os.Bundle;
+import android.os.IBinder;
 import android.os.StrictMode;
 import android.util.Log;
 import android.view.Menu;
@@ -28,6 +31,7 @@ import com.example.maptest.json.Auth;
 import com.example.maptest.json.Data;
 import com.example.maptest.json.GeneralRequest;
 import com.example.maptest.json.Settings;
+import com.example.maptest.services.MyMapService;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.MapFragment;
@@ -53,6 +57,8 @@ public class MainActivity extends Activity implements EditNameDialogListener,
 	private Circle circle;
 	private CircleOptions circleOptions;
 	private LatLng location;
+	private boolean service_bound = false;
+	private MyMapService service;
 	long meterValue;
 	float[] distance = new float[2];
 	ArrayList<Circle> circleList = new ArrayList<Circle>();
@@ -60,6 +66,25 @@ public class MainActivity extends Activity implements EditNameDialogListener,
 	SendPostRequest request = new SendPostRequest();
 	String userId = "";
 	String areaSize = "";
+
+	/**
+	 * Method that creates the ServiceConnection and sets its onServiceConnected
+	 * and onServiceDisconnected listeners.
+	 */
+	private ServiceConnection mConnection = new ServiceConnection() {
+
+		public void onServiceDisconnected(ComponentName className) {
+		}
+
+		public void onServiceConnected(ComponentName className, IBinder binder) {
+			// Set the binder.
+			MyMapService.LocalBinder b = (MyMapService.LocalBinder) binder;
+			// Retrieve the service using the binder.
+			service = b.getService();
+			service_bound = true;
+		}
+
+	};
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -78,9 +103,9 @@ public class MainActivity extends Activity implements EditNameDialogListener,
 		connManager = (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
 		mWifi = connManager.getNetworkInfo(ConnectivityManager.TYPE_WIFI);
 
-//		if (mWifi.isConnected()) {
-//			audio.setRingerMode(0);
-//		}
+		// if (mWifi.isConnected()) {
+		// audio.setRingerMode(0);
+		// }
 
 		map.setOnMapClickListener(new GoogleMap.OnMapClickListener() {
 
@@ -122,7 +147,7 @@ public class MainActivity extends Activity implements EditNameDialogListener,
 							15));
 					map.animateCamera(CameraUpdateFactory.zoomTo(15), 2000,
 							null);
-					
+
 					if (circle != null) {
 						for (int i = 0; i <= circleList.size() - 1; i++) {
 							Location.distanceBetween(
