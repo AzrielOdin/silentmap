@@ -57,7 +57,7 @@ public class MyMapService extends Service implements ServiceInterface {
 
 	@Override
 	public ArrayList<Area> getCircles() {
-		// TODO Auto-generated method stub
+		
 		return null;
 	}
 
