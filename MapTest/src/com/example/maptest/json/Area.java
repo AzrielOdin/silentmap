@@ -1,28 +1,48 @@
 package com.example.maptest.json;
 
 public class Area {
-	private int id;
+	private String user;
+	private String circle_hash;
 	private double latitude;
 	private double longitude;
 	private int radius;
 	private Settings settings;
 
-	public Area(int id, double latitude, double longitude, int radius,
-			Settings settings) {
+	public Area(String user, double latitude, double longitude, int radius,
+			String circle_hash, Settings settings) {
 		super();
-		this.id = id;
+		this.user = user;
+		this.circle_hash = circle_hash;
 		this.latitude = latitude;
 		this.longitude = longitude;
 		this.radius = radius;
 		this.settings = settings;
 	}
 
-	public int getId() {
-		return id;
+	public Area(double latitude, double longitude, int radius,
+			String circle_hash, Settings settings) {
+		super();
+		this.circle_hash = circle_hash;
+		this.latitude = latitude;
+		this.longitude = longitude;
+		this.radius = radius;
+		this.settings = settings;
 	}
 
-	public void setId(int id) {
-		this.id = id;
+	public String getUser() {
+		return user;
+	}
+
+	public void setUser(String user) {
+		this.user = user;
+	}
+
+	public String getCircle_hash() {
+		return circle_hash;
+	}
+
+	public void setCircle_hash(String circle_hash) {
+		this.circle_hash = circle_hash;
 	}
 
 	public double getLatitude() {

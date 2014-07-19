@@ -4,6 +4,8 @@ public class GeneralRequest {
 	private Auth auth;
 	private Data data;
 
+	
+	
 	public GeneralRequest(Auth auth, Data data) {
 		super();
 		this.auth = auth;

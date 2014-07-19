@@ -1,5 +1,7 @@
 package com.example.maptest;
 
+import java.io.IOException;
+import java.security.NoSuchAlgorithmException;
 import java.util.ArrayList;
 
 import android.app.Activity;
@@ -31,6 +33,7 @@ import com.example.maptest.json.Auth;
 import com.example.maptest.json.Data;
 import com.example.maptest.json.GeneralRequest;
 import com.example.maptest.json.Settings;
+import com.example.maptest.security.Encription;
 import com.example.maptest.services.MyMapService;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
@@ -65,7 +68,9 @@ public class MainActivity extends Activity implements EditNameDialogListener,
 	TextView txt = null;
 	SendPostRequest request = new SendPostRequest();
 	String userId = "";
+	String userPassword = "";
 	String areaSize = "";
+	private Encription enc = Encription.getInstance();
 
 	/**
 	 * Method that creates the ServiceConnection and sets its onServiceConnected
@@ -148,28 +153,28 @@ public class MainActivity extends Activity implements EditNameDialogListener,
 					map.animateCamera(CameraUpdateFactory.zoomTo(15), 2000,
 							null);
 
-					if (circle != null) {
-						for (int i = 0; i <= circleList.size() - 1; i++) {
-							Location.distanceBetween(
-									locationMarker.getPosition().latitude,
-									locationMarker.getPosition().longitude,
-									circleList.get(i).getCenter().latitude,
-									circleList.get(i).getCenter().longitude,
-									distance);
-
-							if (distance[0] > circleList.get(i).getRadius()) {
-								audio.setRingerMode(2);
-								// Toast.makeText(getBaseContext(),
-								// "Outside index " + i,
-								// Toast.LENGTH_SHORT).show();
-							} else {
-								audio.setRingerMode(0);
-								// Toast.makeText(getBaseContext(),
-								// "Inside index " + i, Toast.LENGTH_SHORT)
-								// .show();
-							}
-						}
-					}
+					// if (circle != null) {
+					// for (int i = 0; i <= circleList.size() - 1; i++) {
+					// Location.distanceBetween(
+					// locationMarker.getPosition().latitude,
+					// locationMarker.getPosition().longitude,
+					// circleList.get(i).getCenter().latitude,
+					// circleList.get(i).getCenter().longitude,
+					// distance);
+					//
+					// if (distance[0] > circleList.get(i).getRadius()) {
+					// audio.setRingerMode(2);
+					// // Toast.makeText(getBaseContext(),
+					// // "Outside index " + i,
+					// // Toast.LENGTH_SHORT).show();
+					// } else {
+					// audio.setRingerMode(0);
+					// // Toast.makeText(getBaseContext(),
+					// // "Inside index " + i, Toast.LENGTH_SHORT)
+					// // .show();
+					// }
+					// }
+					// } to be moved in service
 
 				} else {
 					gps.showSettingsAlert();
@@ -221,36 +226,51 @@ public class MainActivity extends Activity implements EditNameDialogListener,
 
 	}
 
-	public Area[] circlesToArea() {
+	public ArrayList<Area> circlesToArea() {
 		Area temp;
-		Area[] results = new Area[circleList.size()];
+		ArrayList<Area> results = new ArrayList<Area>();
 		Settings dummy = new Settings(true, true);
+		String circleHash = null;
+
 		for (int i = 0; i <= circleList.size() - 1; i++) {
 
-			temp = new Area(0, circleList.get(i).getCenter().latitude,
-					circleList.get(i).getCenter().longitude, (int) circleList
-							.get(i).getRadius(), dummy);
+			try {
+				circleHash = enc.encode(String.valueOf(circleList.get(i)
+						.getCenter().latitude), (String.valueOf(circleList.get(
+						i).getCenter().longitude)));
+			} catch (NoSuchAlgorithmException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			} catch (IOException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
 
-			results[i] = temp;
+			temp = new Area(circleList.get(i).getCenter().latitude, circleList
+					.get(i).getCenter().longitude, (int) circleList.get(i)
+					.getRadius(), circleHash, dummy);
+
+			results.add(temp);
 		}
 
 		return results;
 
 	}
 
-	public GeneralRequest generateSavePayload(Area[] areas, String id) {
+	public GeneralRequest generateSavePayload(ArrayList<Area> areas, String id,
+			String password) {
 
-		Auth myAuth = new Auth(id);
+		Auth myAuth = new Auth(id, password);
 		Data myData = new Data("save", areas);
 		GeneralRequest myGeneralRequest = new GeneralRequest(myAuth, myData);
 
 		return myGeneralRequest;
 	}
 
-	public GeneralRequest generateSavePayload(String id) {
+	public GeneralRequest generateSavePayload(String id, String password) {
 
-		Area[] emptyArea = new Area[0];
-		Auth myAuth = new Auth(id);
+		ArrayList<Area> emptyArea = new ArrayList<Area>();
+		Auth myAuth = new Auth(id, password);
 		Data myData = new Data("delete", emptyArea);
 		GeneralRequest myGeneralRequest = new GeneralRequest(myAuth, myData);
 
@@ -296,9 +316,9 @@ public class MainActivity extends Activity implements EditNameDialogListener,
 	}
 
 	@Override
-	public void onFinishEditDialog(String inputText) {
+	public void onFinishEditDialog(String inputTextId, String inputTextPassword) {
 
-		Auth auth = new Auth(inputText);
+		Auth auth = new Auth(inputTextId, inputTextPassword);
 
 		request.sendMessage(auth, "register");
 

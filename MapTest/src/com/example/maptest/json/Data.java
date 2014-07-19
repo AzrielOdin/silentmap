@@ -4,9 +4,9 @@ import java.util.ArrayList;
 
 public class Data {
 	private String action;
-	private Area[] areas;
+	private ArrayList<Area> areas;
 
-	public Data(String action, Area[] areas) {
+	public Data(String action, ArrayList<Area> areas) {
 		super();
 		this.action = action;
 		this.areas = areas;
@@ -20,11 +20,11 @@ public class Data {
 		this.action = action;
 	}
 
-	public Area[] getAreas() {
+	public ArrayList<Area> getAreas() {
 		return areas;
 	}
 
-	public void setAreas(Area[] areas) {
+	public void setAreas(ArrayList<Area> areas) {
 		this.areas = areas;
 	}
 }

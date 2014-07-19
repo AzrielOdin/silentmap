@@ -27,10 +27,11 @@ public class RegisterDialog extends DialogFragment implements
 	Button deleteCircles;
 	Button synch;
 	EditText userId;
+	EditText userPassword; // make the interface GUI gurl
 	SendPostRequest request = new SendPostRequest();
 
 	public interface EditNameDialogListener {
-		void onFinishEditDialog(String inputText);
+		void onFinishEditDialog(String inputTextId, String inTextPassword);
 	}
 
 	public RegisterDialog() {
@@ -42,6 +43,7 @@ public class RegisterDialog extends DialogFragment implements
 			Bundle savedInstanceState) {
 		View view = inflater.inflate(R.layout.register_dialog, container);
 		userId = (EditText) view.findViewById(R.id.username);
+		userPassword = (EditText) view.findViewById(R.id.password);
 		saveCircles = (Button) view.findViewById(R.id.saveCircles);
 		deleteCircles = (Button) view.findViewById(R.id.deleteCircles);
 		synch = (Button) view.findViewById(R.id.synch);
@@ -63,8 +65,8 @@ public class RegisterDialog extends DialogFragment implements
 
 				request.sendMessage(mainActivityContext.generateSavePayload(
 						mainActivityContext.circlesToArea(),
-						mainActivityContext.userId), "save");
-
+						mainActivityContext.userId,
+						mainActivityContext.userPassword), "save");
 			}
 		});
 
@@ -73,10 +75,9 @@ public class RegisterDialog extends DialogFragment implements
 			@Override
 			public void onClick(View v) {
 
-				request.sendMessage(mainActivityContext
-						.generateSavePayload(mainActivityContext.userId),
-						"save");
-
+				request.sendMessage(mainActivityContext.generateSavePayload(
+						mainActivityContext.userId,
+						mainActivityContext.userPassword), "save");
 				for (int i = 0; i < mainActivityContext.circleList.size(); i++)
 					mainActivityContext.circleList.get(i).remove();
 
@@ -90,7 +91,7 @@ public class RegisterDialog extends DialogFragment implements
 
 				Gson gson = new GsonBuilder().create();
 
-				Auth myAuth = new Auth(mainActivityContext.userId);
+				Auth myAuth = new Auth(mainActivityContext.userId, null);
 
 				for (int i = 0; i < mainActivityContext.circleList.size(); i++)
 					mainActivityContext.circleList.get(i).remove();
@@ -124,7 +125,9 @@ public class RegisterDialog extends DialogFragment implements
 
 		if (EditorInfo.IME_ACTION_DONE == actionId) {
 			EditNameDialogListener activity = (EditNameDialogListener) getActivity();
-			activity.onFinishEditDialog(userId.getText().toString());
+			activity.onFinishEditDialog(userId.getText().toString(),
+					userPassword.getText().toString()); // C:
+
 			final MainActivity xxx = (MainActivity) getActivity();
 			xxx.userId = userId.getText().toString();
 			this.dismiss();
