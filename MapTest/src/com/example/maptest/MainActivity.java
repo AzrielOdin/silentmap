@@ -124,7 +124,7 @@ public class MainActivity extends Activity implements EditNameDialogListener,
 				testAreaDialog.show(areaCreateFragment, "fragment_name");
 
 				circleOptions = new CircleOptions().center(point)
-						.strokeColor(Color.BLUE).fillColor(0x5500ff00).strokeWidth(4);
+						.strokeColor(Color.BLUE).fillColor(Color.parseColor("#500084d3"));
 
 			}
 		});
