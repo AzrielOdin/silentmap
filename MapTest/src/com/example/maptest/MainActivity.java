@@ -11,6 +11,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.ServiceConnection;
 import android.content.SharedPreferences;
+import android.graphics.Color;
 import android.location.Location;
 import android.media.AudioManager;
 import android.net.ConnectivityManager;
@@ -122,8 +123,24 @@ public class MainActivity extends Activity implements EditNameDialogListener,
 				testAreaDialog.setRetainInstance(true);
 				testAreaDialog.show(areaCreateFragment, "fragment_name");
 
-				circleOptions = new CircleOptions().center(point);
+				circleOptions = new CircleOptions().center(point)
+						.strokeColor(Color.BLUE).fillColor(0x5500ff00).strokeWidth(4);
 
+			}
+		});
+
+		map.setOnMapLongClickListener(new GoogleMap.OnMapLongClickListener() {
+
+			@Override
+			public void onMapLongClick(LatLng point) {
+
+				if (circle != null) {
+					for (int i = 0; i <= circleList.size() - 1; i++) {
+
+						circleList.get(i).remove(); //just to test behavior, do not want
+						
+					}
+				}
 			}
 		});
 
@@ -152,29 +169,6 @@ public class MainActivity extends Activity implements EditNameDialogListener,
 							15));
 					map.animateCamera(CameraUpdateFactory.zoomTo(15), 2000,
 							null);
-
-					// if (circle != null) {
-					// for (int i = 0; i <= circleList.size() - 1; i++) {
-					// Location.distanceBetween(
-					// locationMarker.getPosition().latitude,
-					// locationMarker.getPosition().longitude,
-					// circleList.get(i).getCenter().latitude,
-					// circleList.get(i).getCenter().longitude,
-					// distance);
-					//
-					// if (distance[0] > circleList.get(i).getRadius()) {
-					// audio.setRingerMode(2);
-					// // Toast.makeText(getBaseContext(),
-					// // "Outside index " + i,
-					// // Toast.LENGTH_SHORT).show();
-					// } else {
-					// audio.setRingerMode(0);
-					// // Toast.makeText(getBaseContext(),
-					// // "Inside index " + i, Toast.LENGTH_SHORT)
-					// // .show();
-					// }
-					// }
-					// } to be moved in service
 
 				} else {
 					gps.showSettingsAlert();
