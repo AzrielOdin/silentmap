@@ -17,25 +17,20 @@ import org.apache.http.impl.client.DefaultHttpClient;
 import org.apache.http.message.BasicNameValuePair;
 import org.apache.http.util.EntityUtils;
 
-import android.os.AsyncTask;
+import android.os.StrictMode;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 
-public class SendPostRequest extends AsyncTask<String, Void, String>  {
-
+public class SendPostRequest {
+	// extends AsyncTask<String, Void, String>
 	private Gson gson = new GsonBuilder().create();
-	
-	
 
 	public String sendMessage(Object message, String address) {
-
-		String url = "http://192.168.87.108:8080/MSS/" + address;
-		String data = gson.toJson(message);
+		String url = "http://192.168.87.108:8080/MSS/" + message;
+		String data = gson.toJson(address);
 		HttpPost post = new HttpPost(url);
 
-		
-				
 		List<NameValuePair> nameValuePairs = new ArrayList<NameValuePair>(1);
 		nameValuePairs.add(new BasicNameValuePair("report", data));
 
@@ -45,8 +40,6 @@ public class SendPostRequest extends AsyncTask<String, Void, String>  {
 			System.out.println("Your url encoding is shiat fail");
 			e.printStackTrace();
 		}
-		
-		
 
 		HttpClient client = new DefaultHttpClient();
 		HttpResponse response = null;
@@ -72,11 +65,20 @@ public class SendPostRequest extends AsyncTask<String, Void, String>  {
 			e.printStackTrace();
 		}
 		return responseText;
+
 	}
 
-	@Override
-	protected String doInBackground(String... params) {
-	 return "";
-	}
-	
+	// @Override
+	// protected String doInBackground(String... params) {
+	// return sendMessage(params[0], params[1]);
+	// }
+	//
+	// @Override
+	// protected void onPreExecute() {
+	// // TODO Auto-generated method stub
+	// super.onPreExecute();
+	//
+	// }
+	//
+
 }

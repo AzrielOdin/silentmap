@@ -10,12 +10,15 @@ import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
 import android.content.ServiceConnection;
+import android.content.SharedPreferences;
 import android.graphics.Color;
+import android.location.Location;
 import android.media.AudioManager;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.os.Bundle;
 import android.os.IBinder;
+import android.os.StrictMode;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -94,6 +97,13 @@ public class MainActivity extends Activity implements EditNameDialogListener,
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_main);
 
+		
+		//temporary workaround for NetworkOnMainThreadException, just for testing to=0 
+		StrictMode.ThreadPolicy policy = new StrictMode.ThreadPolicy.Builder()
+		.permitAll().build(); 	
+		
+		StrictMode.setThreadPolicy(policy); 
+		
 		btnShowLocation = (Button) findViewById(R.id.btnShowLocation);
 
 		silentButton = (Button) findViewById(R.id.silentButton);
