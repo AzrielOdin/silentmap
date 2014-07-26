@@ -9,9 +9,12 @@ package com.example.maptest.security;
  */
 
 import java.io.IOException;
+import java.net.URL;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
-import org.apache.commons.codec.binary.Base64;
+import android.util.Base64;
+
+import android.util.Log;
 
 import com.example.maptest.json.Area;
 
@@ -106,8 +109,7 @@ public class Encription {
 	 */
 	private byte[] base64ToByte(String str) throws IOException {
 
-		Base64 decoder = new Base64();
-		byte[] returnbyteArray = decoder.decode(str);
+		byte[] returnbyteArray = Base64.decode(str, 0);
 
 		return returnbyteArray;
 	}
@@ -119,8 +121,12 @@ public class Encription {
 	 */
 	private String byteToBase64(byte[] bt) {
 
-		Base64 endecoder = new Base64();
-		String returnString = endecoder.encodeToString(bt);
+		// Base64 endecoder = new Base64();
+		// String returnString = endecoder.encodeToString(bt); problems here
+		// officer, replaced with the code bellow, because commons-codec
+		// confliction problems
+
+		String returnString = new String(Base64.encode(bt, 0));
 
 		return returnString;
 	}

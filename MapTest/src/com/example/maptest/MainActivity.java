@@ -10,15 +10,12 @@ import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
 import android.content.ServiceConnection;
-import android.content.SharedPreferences;
 import android.graphics.Color;
-import android.location.Location;
 import android.media.AudioManager;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.os.Bundle;
 import android.os.IBinder;
-import android.os.StrictMode;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -123,8 +120,7 @@ public class MainActivity extends Activity implements EditNameDialogListener,
 				testAreaDialog.setRetainInstance(true);
 				testAreaDialog.show(areaCreateFragment, "fragment_name");
 
-				circleOptions = new CircleOptions().center(point)
-						.strokeColor(Color.BLUE).fillColor(Color.parseColor("#500084d3"));
+				circleOptions = new CircleOptions().center(point);
 
 			}
 		});
@@ -137,8 +133,9 @@ public class MainActivity extends Activity implements EditNameDialogListener,
 				if (circle != null) {
 					for (int i = 0; i <= circleList.size() - 1; i++) {
 
-						circleList.get(i).remove(); //just to test behavior, do not want
-						
+						circleList.get(i).remove(); // just to test behavior, do
+													// not want
+
 					}
 				}
 			}
@@ -323,11 +320,17 @@ public class MainActivity extends Activity implements EditNameDialogListener,
 
 	@Override
 	public void onFinishAreaDialog(double inputText) {
-		circleOptions.radius(inputText);
-		circle = map.addCircle(circleOptions);
-		circleList.add(circle);
-		Toast.makeText(getApplicationContext(), "Circle Added",
-				Toast.LENGTH_LONG).show();
+		if (inputText <= 1000) {
+			circleOptions.radius(inputText).strokeColor(Color.BLUE)
+					.fillColor(Color.parseColor("#500084d3"));
+			circle = map.addCircle(circleOptions);
+			circleList.add(circle);
+			Toast.makeText(getApplicationContext(), "New Area Added",
+					Toast.LENGTH_LONG).show();
+		} else {
+			Toast.makeText(getApplicationContext(), "Area Size too big",
+					Toast.LENGTH_LONG).show();
+		}
 
 	}
 
