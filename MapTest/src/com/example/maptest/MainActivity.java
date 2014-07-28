@@ -1,8 +1,22 @@
 package com.example.maptest;
 
 import java.io.IOException;
+import java.io.UnsupportedEncodingException;
 import java.security.NoSuchAlgorithmException;
 import java.util.ArrayList;
+import java.util.List;
+
+import org.apache.http.HttpEntity;
+import org.apache.http.HttpResponse;
+import org.apache.http.NameValuePair;
+import org.apache.http.ParseException;
+import org.apache.http.client.ClientProtocolException;
+import org.apache.http.client.HttpClient;
+import org.apache.http.client.entity.UrlEncodedFormEntity;
+import org.apache.http.client.methods.HttpPost;
+import org.apache.http.impl.client.DefaultHttpClient;
+import org.apache.http.message.BasicNameValuePair;
+import org.apache.http.util.EntityUtils;
 
 import android.app.Activity;
 import android.app.FragmentManager;
@@ -10,15 +24,13 @@ import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
 import android.content.ServiceConnection;
-import android.content.SharedPreferences;
 import android.graphics.Color;
-import android.location.Location;
 import android.media.AudioManager;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.IBinder;
-import android.os.StrictMode;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -44,6 +56,8 @@ import com.google.android.gms.maps.model.CircleOptions;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
 
 public class MainActivity extends Activity implements EditNameDialogListener,
 		EditAreaDialogListener {
@@ -67,11 +81,11 @@ public class MainActivity extends Activity implements EditNameDialogListener,
 	float[] distance = new float[2];
 	ArrayList<Circle> circleList = new ArrayList<Circle>();
 	TextView txt = null;
-	SendPostRequest request = new SendPostRequest();
 	String userId = "";
 	String userPassword = "";
 	String areaSize = "";
 	private Encription enc = Encription.getInstance();
+	Gson gson = new GsonBuilder().create();
 
 	/**
 	 * Method that creates the ServiceConnection and sets its onServiceConnected
@@ -97,13 +111,14 @@ public class MainActivity extends Activity implements EditNameDialogListener,
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_main);
 
-		
-		//temporary workaround for NetworkOnMainThreadException, just for testing to=0 
-		StrictMode.ThreadPolicy policy = new StrictMode.ThreadPolicy.Builder()
-		.permitAll().build(); 	
-		
-		StrictMode.setThreadPolicy(policy); 
-		
+		// // temporary workaround for NetworkOnMainThreadException, bad news
+		// bears
+		// StrictMode.ThreadPolicy policy = new
+		// StrictMode.ThreadPolicy.Builder()
+		// .permitAll().build();
+		//
+		// StrictMode.setThreadPolicy(policy);
+
 		btnShowLocation = (Button) findViewById(R.id.btnShowLocation);
 
 		silentButton = (Button) findViewById(R.id.silentButton);
@@ -319,12 +334,73 @@ public class MainActivity extends Activity implements EditNameDialogListener,
 	@Override
 	public void onFinishEditDialog(String inputTextId, String inputTextPassword) {
 
-		Auth auth = new Auth(inputTextId, inputTextPassword);
+		class SendRegisterRequest extends AsyncTask<String, Void, String> {
 
-		request.sendMessage(auth, "register");
+			// private Gson gson = new GsonBuilder().create();
+			// String data = gson.toJson(message);
 
-		Toast.makeText(getApplicationContext(), "Saved", Toast.LENGTH_LONG)
+			private String sendMessage(String message, String address) {
+				String url = "http://192.168.87.108:8080/MSS/" + address;
+
+				HttpPost post = new HttpPost(url);
+
+				List<NameValuePair> nameValuePairs = new ArrayList<NameValuePair>(
+						1);
+				nameValuePairs.add(new BasicNameValuePair("report", message));
+
+				try {
+					post.setEntity(new UrlEncodedFormEntity(nameValuePairs));
+				} catch (UnsupportedEncodingException e) {
+					System.out.println("Your url encoding is shiat fail");
+					e.printStackTrace();
+				}
+
+				HttpClient client = new DefaultHttpClient();
+				HttpResponse response = null;
+				try {
+					response = client.execute(post);
+				} catch (ClientProtocolException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				} catch (IOException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+				HttpEntity entity = response.getEntity();
+
+				String responseText = "";
+				try {
+					responseText = EntityUtils.toString(entity);
+				} catch (ParseException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				} catch (IOException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+				return responseText;
+
+			}
+
+			@Override
+			protected String doInBackground(String... params) {
+				return sendMessage(params[0], params[1]);
+			}
+
+			@Override
+			protected void onPostExecute(String result) {
+				Toast.makeText(getApplicationContext(), result, Toast.LENGTH_LONG)
 				.show();
+			}
+
+		}
+
+		Auth auth = new Auth(inputTextId, inputTextPassword);
+		String msg = gson.toJson(auth);
+
+		new SendRegisterRequest().execute(msg, "register");
+
+		
 
 	}
 
