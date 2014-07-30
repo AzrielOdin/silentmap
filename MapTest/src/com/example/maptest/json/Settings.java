@@ -10,6 +10,13 @@ public class Settings {
 		this.vibrate = vibrate;
 	}
 
+	public Settings(int silent, int vibrate) {
+		super();
+
+		this.silent = (silent == 1);
+		this.vibrate = (vibrate == 1);
+	}
+
 	public boolean isSilent() {
 		return silent;
 	}

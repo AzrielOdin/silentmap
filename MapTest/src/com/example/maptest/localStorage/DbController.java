@@ -3,13 +3,17 @@ package com.example.maptest.localStorage;
 import java.util.ArrayList;
 
 import com.example.maptest.json.Area;
+import com.example.maptest.json.Settings;
 
+import android.content.ContentValues;
 import android.content.Context;
+import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 
 public class DbController extends SQLiteOpenHelper implements
 		DbControllerInterface {
+
 	// All Static variables
 	// Database Version
 	private static final int DATABASE_VERSION = 1;
@@ -18,7 +22,6 @@ public class DbController extends SQLiteOpenHelper implements
 	private static final String DATABASE_NAME = "mobile";
 
 	// tables
-	private static final String TABLE_USERS = "users";
 	private static final String TABLE_AREAS = "areas";
 
 	// Areas Table Columns names
@@ -50,7 +53,6 @@ public class DbController extends SQLiteOpenHelper implements
 	@Override
 	public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
 		// Drop older table if existed
-		db.execSQL("DROP TABLE IF EXISTS " + TABLE_USERS);
 		db.execSQL("DROP TABLE IF EXISTS " + TABLE_AREAS);
 
 		// Create tables again
@@ -58,27 +60,80 @@ public class DbController extends SQLiteOpenHelper implements
 	}
 
 	@Override
-	public void onConfigure(SQLiteDatabase db) {
-
-		db.setForeignKeyConstraintsEnabled(true);
-
-	}
-
-	@Override
 	public ArrayList<Area> getAreas() {
-		// TODO Auto-generated method stub
-		return null;
+		ArrayList<Area> areas = new ArrayList<Area>();
+
+		String query = "Select latitude,longitude,radius,circle_hash,silent,vibrate FROM areas";
+
+		Cursor cursor = getReadableDatabase().rawQuery(query, new String[] {});
+
+		cursor.moveToFirst();
+		while (!cursor.isAfterLast()) {
+			Area temp = new Area(cursor.getDouble(0), cursor.getDouble(1),
+					cursor.getInt(2), cursor.getString(3), new Settings(
+							cursor.getInt(4), cursor.getInt(5)));
+
+			areas.add(temp);
+			cursor.moveToNext();
+		}
+		cursor.close();
+
+		return areas;
 	}
 
 	@Override
 	public void newAreas(ArrayList<Area> areas) {
-		// TODO Auto-generated method stub
+		int index = 0;
+		SQLiteDatabase db = getReadableDatabase();
+		db.beginTransaction();
+		try {
+			for (int i = index; i < areas.size(); i++) {
+				Area curArea = areas.get(i);
+				ContentValues values = new ContentValues();
+				values.put(KEY_LATITUDE, curArea.getLatitude());
+				values.put(KEY_LONGITUDE, curArea.getLongitude());
+				values.put(KEY_LATITUDE, curArea.getRadius());
+				values.put(KEY_CIRCLE_HASH, curArea.getCircle_hash());
+				values.put(KEY_SILENT, curArea.getSettings().isSilent());
+				values.put(KEY_VIBRATE, curArea.getSettings().isVibrate());
+				db.insert(TABLE_AREAS, null, values);
+				index++;
+				// In case you do larger updates
+				db.yieldIfContendedSafely();
+			}
+			db.setTransactionSuccessful();
+		} finally {
+			db.endTransaction();
+		}
 
 	}
 
 	@Override
 	public void updateAreas(ArrayList<Area> areas) {
-		// TODO Auto-generated method stub
+		int index = 0;
+
+		// ToDo check if circles have hashes, update the ones that do and create
+		// a hash for ones that don't
+
+		SQLiteDatabase db = getReadableDatabase();
+		db.beginTransaction();
+		try {
+			for (int i = index; i < areas.size(); i++) {
+				Area curArea = areas.get(i);
+				ContentValues values = new ContentValues();
+				values.put(KEY_LATITUDE, curArea.getRadius());
+				values.put(KEY_SILENT, curArea.getSettings().isSilent());
+				values.put(KEY_VIBRATE, curArea.getSettings().isVibrate());
+				db.update(TABLE_AREAS, values,
+						"WHERE circle_hash =" + curArea.getCircle_hash(), null);
+				index++;
+				// In case you do larger updates
+				db.yieldIfContendedSafely();
+			}
+			db.setTransactionSuccessful();
+		} finally {
+			db.endTransaction();
+		}
 
 	}
 
@@ -90,7 +145,8 @@ public class DbController extends SQLiteOpenHelper implements
 
 	@Override
 	public void deleteAllAreas() {
-		// TODO Auto-generated method stub
+		String query = "DELETE * FROM areas";
+		getReadableDatabase().rawQuery(query, new String[] {});
 
 	}
 }
