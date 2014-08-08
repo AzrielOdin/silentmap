@@ -12,7 +12,9 @@ import java.io.IOException;
 import java.net.URL;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
+
 import android.util.Base64;
+
 
 import android.util.Log;
 
@@ -109,7 +111,9 @@ public class Encription {
 	 */
 	private byte[] base64ToByte(String str) throws IOException {
 
-		byte[] returnbyteArray = Base64.decode(str, 0);
+		byte[] returnbyteArray = Base64.decode(str.getBytes(), Base64.DEFAULT);
+		
+		
 
 		return returnbyteArray;
 	}
@@ -121,12 +125,12 @@ public class Encription {
 	 */
 	private String byteToBase64(byte[] bt) {
 
-		// Base64 endecoder = new Base64();
-		// String returnString = endecoder.encodeToString(bt); problems here
-		// officer, replaced with the code bellow, because commons-codec
-		// confliction problems
+//		 Base64 endecoder = new Base64();
+//		 String returnString = endecoder.encodeToString(bt);
 
-		String returnString = new String(Base64.encode(bt, 0));
+//		String returnString = new String(Base64.encode(bt, 0));
+		
+		String returnString = Base64.encodeToString(bt, Base64.DEFAULT);
 
 		return returnString;
 	}

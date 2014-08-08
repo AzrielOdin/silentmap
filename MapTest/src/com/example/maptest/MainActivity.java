@@ -46,6 +46,7 @@ import com.example.maptest.json.Auth;
 import com.example.maptest.json.Data;
 import com.example.maptest.json.GeneralRequest;
 import com.example.maptest.json.Settings;
+import com.example.maptest.localStorage.DbController;
 import com.example.maptest.security.Encription;
 import com.example.maptest.services.MyMapService;
 import com.google.android.gms.maps.CameraUpdateFactory;
@@ -80,12 +81,14 @@ public class MainActivity extends Activity implements EditNameDialogListener,
 	long meterValue;
 	float[] distance = new float[2];
 	ArrayList<Circle> circleList = new ArrayList<Circle>();
+	ArrayList<Area> areaList = new ArrayList<Area>();
 	TextView txt = null;
 	String userId = "";
 	String userPassword = "";
 	String areaSize = "";
 	private Encription enc = Encription.getInstance();
 	Gson gson = new GsonBuilder().create();
+	DbController dbController = new DbController(this);
 
 	/**
 	 * Method that creates the ServiceConnection and sets its onServiceConnected
@@ -242,35 +245,25 @@ public class MainActivity extends Activity implements EditNameDialogListener,
 
 	}
 
-	public ArrayList<Area> circlesToArea() {
-		Area temp;
-		ArrayList<Area> results = new ArrayList<Area>();
-		Settings dummy = new Settings(true, true);
+	public String calculateCircleHash(LatLng hashCircle) {
 		String circleHash = null;
 
-		for (int i = 0; i <= circleList.size() - 1; i++) {
+		try {
+			Log.i("encode", String.valueOf(hashCircle.latitude));
+			Log.i("encode", String.valueOf(hashCircle.longitude));
+			circleHash = enc.encode(String.valueOf(hashCircle.latitude),
+					(String.valueOf(hashCircle.longitude)));
+			Log.i("encode", "Should be encoded");
 
-			try {
-				circleHash = enc.encode(String.valueOf(circleList.get(i)
-						.getCenter().latitude), (String.valueOf(circleList.get(
-						i).getCenter().longitude)));
-			} catch (NoSuchAlgorithmException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			} catch (IOException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
-
-			temp = new Area(circleList.get(i).getCenter().latitude, circleList
-					.get(i).getCenter().longitude, (int) circleList.get(i)
-					.getRadius(), circleHash, dummy);
-
-			results.add(temp);
+		} catch (NoSuchAlgorithmException e) {
+			Log.i("encode", "NoSuchAlgorithmException");
+			e.printStackTrace();
+		} catch (IOException e) {
+			Log.i("encode", "IOException");
+			e.printStackTrace();
 		}
 
-		return results;
-
+		return circleHash;
 	}
 
 	public GeneralRequest generateSavePayload(ArrayList<Area> areas, String id,
@@ -334,73 +327,71 @@ public class MainActivity extends Activity implements EditNameDialogListener,
 	@Override
 	public void onFinishEditDialog(String inputTextId, String inputTextPassword) {
 
-		class SendRegisterRequest extends AsyncTask<String, Void, String> {
+		// class SendRegisterRequest extends AsyncTask<String, Void, String> {
+		//
+		// // private Gson gson = new GsonBuilder().create();
+		// // String data = gson.toJson(message);
+		//
+		// private String sendMessage(String message, String address) {
+		// String url = "http://192.168.1.7:8080/MSS/" + address;
+		//
+		// HttpPost post = new HttpPost(url);
+		//
+		// List<NameValuePair> nameValuePairs = new ArrayList<NameValuePair>(
+		// 1);
+		// nameValuePairs.add(new BasicNameValuePair("report", message));
+		//
+		// try {
+		// post.setEntity(new UrlEncodedFormEntity(nameValuePairs));
+		// } catch (UnsupportedEncodingException e) {
+		// System.out.println("Your url encoding is shiat fail");
+		// e.printStackTrace();
+		// }
+		//
+		// HttpClient client = new DefaultHttpClient();
+		// HttpResponse response = null;
+		// try {
+		// response = client.execute(post);
+		// } catch (ClientProtocolException e) {
+		// // TODO Auto-generated catch block
+		// e.printStackTrace();
+		// } catch (IOException e) {
+		// // TODO Auto-generated catch block
+		// e.printStackTrace();
+		// }
+		// HttpEntity entity = response.getEntity();
+		//
+		// String responseText = "";
+		// try {
+		// responseText = EntityUtils.toString(entity);
+		// } catch (ParseException e) {
+		// // TODO Auto-generated catch block
+		// e.printStackTrace();
+		// } catch (IOException e) {
+		// // TODO Auto-generated catch block
+		// e.printStackTrace();
+		// }
+		// return responseText;
+		//
+		// }
+		//
+		// @Override
+		// protected String doInBackground(String... params) {
+		// return sendMessage(params[0], params[1]);
+		// }
+		//
+		// @Override
+		// protected void onPostExecute(String result) {
+		// Toast.makeText(getApplicationContext(), result,
+		// Toast.LENGTH_LONG).show();
+		// }
+		//
+		// }
 
-			// private Gson gson = new GsonBuilder().create();
-			// String data = gson.toJson(message);
-
-			private String sendMessage(String message, String address) {
-				String url = "http://192.168.87.108:8080/MSS/" + address;
-
-				HttpPost post = new HttpPost(url);
-
-				List<NameValuePair> nameValuePairs = new ArrayList<NameValuePair>(
-						1);
-				nameValuePairs.add(new BasicNameValuePair("report", message));
-
-				try {
-					post.setEntity(new UrlEncodedFormEntity(nameValuePairs));
-				} catch (UnsupportedEncodingException e) {
-					System.out.println("Your url encoding is shiat fail");
-					e.printStackTrace();
-				}
-
-				HttpClient client = new DefaultHttpClient();
-				HttpResponse response = null;
-				try {
-					response = client.execute(post);
-				} catch (ClientProtocolException e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
-				} catch (IOException e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
-				}
-				HttpEntity entity = response.getEntity();
-
-				String responseText = "";
-				try {
-					responseText = EntityUtils.toString(entity);
-				} catch (ParseException e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
-				} catch (IOException e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
-				}
-				return responseText;
-
-			}
-
-			@Override
-			protected String doInBackground(String... params) {
-				return sendMessage(params[0], params[1]);
-			}
-
-			@Override
-			protected void onPostExecute(String result) {
-				Toast.makeText(getApplicationContext(), result, Toast.LENGTH_LONG)
-				.show();
-			}
-
-		}
-
-		Auth auth = new Auth(inputTextId, inputTextPassword);
-		String msg = gson.toJson(auth);
-
-		new SendRegisterRequest().execute(msg, "register");
-
-		
+		// Auth auth = new Auth(inputTextId, inputTextPassword);
+		// String msg = gson.toJson(auth);
+		//
+		// new SendRegisterRequest().execute(msg, "register");
 
 	}
 
@@ -411,6 +402,12 @@ public class MainActivity extends Activity implements EditNameDialogListener,
 					.fillColor(Color.parseColor("#500084d3"));
 			circle = map.addCircle(circleOptions);
 			circleList.add(circle);
+			LatLng circleOptionsCenter = circleOptions.getCenter();
+			areaList.add(new Area(circleOptionsCenter.latitude,
+					circleOptionsCenter.longitude, (int) circleOptions
+							.getRadius(), this
+							.calculateCircleHash(circleOptionsCenter),
+					new Settings(1, 1)));
 			Toast.makeText(getApplicationContext(), "New Area Added",
 					Toast.LENGTH_LONG).show();
 		} else {

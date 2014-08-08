@@ -43,6 +43,7 @@ import com.google.gson.GsonBuilder;
 public class RegisterDialog extends DialogFragment implements
 		OnEditorActionListener {
 
+	Button registerUser;
 	Button saveCircles;
 	Button deleteCircles;
 	Button synch;
@@ -65,6 +66,9 @@ public class RegisterDialog extends DialogFragment implements
 		View view = inflater.inflate(R.layout.register_dialog, container);
 		userId = (EditText) view.findViewById(R.id.username);
 		userPassword = (EditText) view.findViewById(R.id.password);
+		// String userIdString = userId.getText().toString();
+		// String userPassWordString = userPassword.getText().toString();
+		registerUser = (Button) view.findViewById(R.id.register);
 		saveCircles = (Button) view.findViewById(R.id.saveCircles);
 		deleteCircles = (Button) view.findViewById(R.id.deleteCircles);
 		synch = (Button) view.findViewById(R.id.synch);
@@ -79,100 +83,25 @@ public class RegisterDialog extends DialogFragment implements
 		} else {
 			userId.setText("");
 		}
-		saveCircles.setOnClickListener(new View.OnClickListener() {
+
+		if (mainActivityContext.userPassword != null) {
+			userPassword.setText(mainActivityContext.userPassword);
+		} else {
+			userPassword.setText("");
+		}
+
+		registerUser.setOnClickListener(new View.OnClickListener() {
 
 			@Override
 			public void onClick(View v) {
-
-				class SendSaveRequest extends AsyncTask<String, Void, String> {
+				class SendRegisterRequest extends
+						AsyncTask<String, Void, String> {
 
 					// private Gson gson = new GsonBuilder().create();
 					// String data = gson.toJson(message);
 
 					private String sendMessage(String message, String address) {
-						String url = "http://192.168.87.108:8080/MSS/"
-								+ address;
-
-						HttpPost post = new HttpPost(url);
-
-						List<NameValuePair> nameValuePairs = new ArrayList<NameValuePair>(
-								1);
-						nameValuePairs.add(new BasicNameValuePair("report",
-								message));
-
-						try {
-							post.setEntity(new UrlEncodedFormEntity(
-									nameValuePairs));
-						} catch (UnsupportedEncodingException e) {					
-							Log.i("client", "Your url encoding is shiat fail");
-						}
-
-						HttpClient client = new DefaultHttpClient();
-						HttpResponse response = null;
-						try {
-							Log.i("client", "Trying to execute");
-							response = client.execute(post);
-							Log.i("client", "Execution success");							
-						} catch (ClientProtocolException e) {
-							Log.i("client", "Problems with execute post, ClientProtocolException");
-							e.printStackTrace();
-						} catch (IOException e) {
-							Log.i("client", "Problems with execute post, IOException");
-							e.printStackTrace();
-						}
-						
-						HttpEntity entity = response.getEntity();
-
-						String responseText = "";
-						try {
-							responseText = EntityUtils.toString(entity);
-						} catch (ParseException e) {
-							// TODO Auto-generated catch block
-							e.printStackTrace();
-						} catch (IOException e) {
-							// TODO Auto-generated catch block
-							e.printStackTrace();
-						}
-						return responseText;
-
-					}
-
-					@Override
-					protected String doInBackground(String... params) {
-						return sendMessage(params[0], params[1]);
-					}
-
-					@Override
-					protected void onPostExecute(String result) {
-						Toast.makeText(mainActivityContext, result,
-								Toast.LENGTH_LONG).show();
-					}
-
-				}
-
-				String msg = gson.toJson(mainActivityContext
-						.generateSavePayload(
-								mainActivityContext.circlesToArea(),
-								mainActivityContext.userId,
-								mainActivityContext.userPassword));
-
-				new SendSaveRequest().execute(msg, "save");
-			}
-		});
-
-		deleteCircles.setOnClickListener(new View.OnClickListener() {
-
-			@Override
-			public void onClick(View v) {
-
-				class SendDeleteRequest extends AsyncTask<String, Void, String> {
-
-					// private Gson gson = new GsonBuilder().create();
-					// String data = gson.toJson(message);
-
-					private String sendMessage(String message, String address) {
-						String url = "http://192.168.87.108:8080/MSS/"
-								+ address;
+						String url = "http://192.168.1.7:8080/MSS/" + address;
 
 						HttpPost post = new HttpPost(url);
 
@@ -185,32 +114,35 @@ public class RegisterDialog extends DialogFragment implements
 							post.setEntity(new UrlEncodedFormEntity(
 									nameValuePairs));
 						} catch (UnsupportedEncodingException e) {
-							System.out
-									.println("Your url encoding is shiat fail");
-							e.printStackTrace();
+							Log.i("client", "Your url encoding is shiat fail");
 						}
 
 						HttpClient client = new DefaultHttpClient();
 						HttpResponse response = null;
 						try {
+							Log.i("client", "Trying to execute");
 							response = client.execute(post);
+							Log.i("client", "Execution success");
 						} catch (ClientProtocolException e) {
-							// TODO Auto-generated catch block
+							Log.i("client",
+									"Problems with execute post, ClientProtocolException");
 							e.printStackTrace();
 						} catch (IOException e) {
-							// TODO Auto-generated catch block
+							Log.i("client",
+									"Problems with execute post, IOException");
 							e.printStackTrace();
 						}
+
 						HttpEntity entity = response.getEntity();
 
 						String responseText = "";
 						try {
 							responseText = EntityUtils.toString(entity);
 						} catch (ParseException e) {
-							// TODO Auto-generated catch block
+							Log.i("request", "ParseException found");
 							e.printStackTrace();
 						} catch (IOException e) {
-							// TODO Auto-generated catch block
+							Log.i("request", "IOException found");
 							e.printStackTrace();
 						}
 						return responseText;
@@ -230,13 +162,186 @@ public class RegisterDialog extends DialogFragment implements
 
 				}
 
-				String msg = gson.toJson(mainActivityContext
-						.generateSavePayload(mainActivityContext.userId,
-								mainActivityContext.userPassword));
+				Log.i("register", "User Id is: " + mainActivityContext.userId
+						+ " User Password is: "
+						+ mainActivityContext.userPassword);
 
-				new SendDeleteRequest().execute(msg, "save");
-				for (int i = 0; i < mainActivityContext.circleList.size(); i++)
-					mainActivityContext.circleList.get(i).remove();
+				Auth auth = new Auth(mainActivityContext.userId,
+						mainActivityContext.userPassword);
+
+				Log.i("register", "User Id is: " + mainActivityContext.userId
+						+ " User Password is: "
+						+ mainActivityContext.userPassword);
+				String msg = gson.toJson(auth);
+
+				new SendRegisterRequest().execute(msg, "register");
+
+				Log.i("register", "User Id is: " + mainActivityContext.userId
+						+ " User Password is: "
+						+ mainActivityContext.userPassword);
+
+			}
+		});
+
+		saveCircles.setOnClickListener(new View.OnClickListener() {
+
+			@Override
+			public void onClick(View v) {
+
+				// class SendSaveRequest extends AsyncTask<String, Void, String>
+				// {
+				//
+				// // private Gson gson = new GsonBuilder().create();
+				// // String data = gson.toJson(message);
+				//
+				// private String sendMessage(String message, String address) {
+				// String url = "http://192.168.1.7:8080/MSS/" + address;
+				//
+				// HttpPost post = new HttpPost(url);
+				//
+				// List<NameValuePair> nameValuePairs = new
+				// ArrayList<NameValuePair>(
+				// 1);
+				// nameValuePairs.add(new BasicNameValuePair("report",
+				// message));
+				//
+				// try {
+				// post.setEntity(new UrlEncodedFormEntity(
+				// nameValuePairs));
+				// } catch (UnsupportedEncodingException e) {
+				// Log.i("client", "Your url encoding is shiat fail");
+				// }
+				//
+				// HttpClient client = new DefaultHttpClient();
+				// HttpResponse response = null;
+				// try {
+				// Log.i("client", "Trying to execute");
+				// response = client.execute(post);
+				// Log.i("client", "Execution success");
+				// } catch (ClientProtocolException e) {
+				// Log.i("client",
+				// "Problems with execute post, ClientProtocolException");
+				// e.printStackTrace();
+				// } catch (IOException e) {
+				// Log.i("client",
+				// "Problems with execute post, IOException");
+				// e.printStackTrace();
+				// }
+				//
+				// HttpEntity entity = response.getEntity();
+				//
+				// String responseText = "";
+				// try {
+				// responseText = EntityUtils.toString(entity);
+				// } catch (ParseException e) {
+				// Log.i("request", "ParseException found");
+				// e.printStackTrace();
+				// } catch (IOException e) {
+				// Log.i("request", "IOException found");
+				// e.printStackTrace();
+				// }
+				// return responseText;
+				//
+				// }
+				//
+				// @Override
+				// protected String doInBackground(String... params) {
+				// return sendMessage(params[0], params[1]);
+				// }
+				//
+				// @Override
+				// protected void onPostExecute(String result) {
+				// Toast.makeText(mainActivityContext, result,
+				// Toast.LENGTH_LONG).show();
+				// }
+				//
+				// }
+				//
+				mainActivityContext.dbController
+						.newAreas(mainActivityContext.areaList);
+
+			}
+		});
+
+		deleteCircles.setOnClickListener(new View.OnClickListener() {
+
+			@Override
+			public void onClick(View v) {
+
+				// class SendDeleteRequest extends AsyncTask<String, Void,
+				// String> {
+				//
+				// // private Gson gson = new GsonBuilder().create();
+				// // String data = gson.toJson(message);
+				//
+				// private String sendMessage(String message, String address) {
+				// String url = "http://192.168.1.7:8080/MSS/" + address;
+				//
+				// HttpPost post = new HttpPost(url);
+				//
+				// List<NameValuePair> nameValuePairs = new
+				// ArrayList<NameValuePair>(
+				// 1);
+				// nameValuePairs.add(new BasicNameValuePair("report",
+				// message));
+				//
+				// try {
+				// post.setEntity(new UrlEncodedFormEntity(
+				// nameValuePairs));
+				// } catch (UnsupportedEncodingException e) {
+				// System.out
+				// .println("Your url encoding is shiat fail");
+				// e.printStackTrace();
+				// }
+				//
+				// HttpClient client = new DefaultHttpClient();
+				// HttpResponse response = null;
+				// try {
+				// response = client.execute(post);
+				// } catch (ClientProtocolException e) {
+				// // TODO Auto-generated catch block
+				// e.printStackTrace();
+				// } catch (IOException e) {
+				// // TODO Auto-generated catch block
+				// e.printStackTrace();
+				// }
+				// HttpEntity entity = response.getEntity();
+				//
+				// String responseText = "";
+				// try {
+				// responseText = EntityUtils.toString(entity);
+				// } catch (ParseException e) {
+				// // TODO Auto-generated catch block
+				// e.printStackTrace();
+				// } catch (IOException e) {
+				// // TODO Auto-generated catch block
+				// e.printStackTrace();
+				// }
+				// return responseText;
+				//
+				// }
+				//
+				// @Override
+				// protected String doInBackground(String... params) {
+				// return sendMessage(params[0], params[1]);
+				// }
+				//
+				// @Override
+				// protected void onPostExecute(String result) {
+				// Toast.makeText(mainActivityContext, result,
+				// Toast.LENGTH_LONG).show();
+				// }
+				//
+				// }
+				//
+				// String msg = gson.toJson(mainActivityContext
+				// .generateSavePayload(mainActivityContext.userId,
+				// mainActivityContext.userPassword));
+				//
+				// new SendDeleteRequest().execute(msg, "save");
+				// for (int i = 0; i < mainActivityContext.circleList.size();
+				// i++)
+				// mainActivityContext.circleList.get(i).remove();
 
 			}
 		});
@@ -246,98 +351,99 @@ public class RegisterDialog extends DialogFragment implements
 			@Override
 			public void onClick(View v) {
 
-				class SendSynchRequest extends AsyncTask<String, Void, String> {
-
-					// private Gson gson = new GsonBuilder().create();
-					// String data = gson.toJson(message);
-
-					private String sendMessage(String message, String address) {
-						String url = "http://192.168.87.108:8080/MSS/"
-								+ address;
-
-						HttpPost post = new HttpPost(url);
-
-						List<NameValuePair> nameValuePairs = new ArrayList<NameValuePair>(
-								1);
-						nameValuePairs.add(new BasicNameValuePair("report",
-								message));
-
-						try {
-							post.setEntity(new UrlEncodedFormEntity(
-									nameValuePairs));
-						} catch (UnsupportedEncodingException e) {
-							System.out
-									.println("Your url encoding is shiat fail");
-							e.printStackTrace();
-						}
-
-						HttpClient client = new DefaultHttpClient();
-						HttpResponse response = null;
-						try {
-							response = client.execute(post);
-						} catch (ClientProtocolException e) {
-							// TODO Auto-generated catch block
-							e.printStackTrace();
-						} catch (IOException e) {
-							// TODO Auto-generated catch block
-							e.printStackTrace();
-						}
-						HttpEntity entity = response.getEntity();
-
-						String responseText = "";
-						try {
-							responseText = EntityUtils.toString(entity);
-						} catch (ParseException e) {
-							// TODO Auto-generated catch block
-							e.printStackTrace();
-						} catch (IOException e) {
-							// TODO Auto-generated catch block
-							e.printStackTrace();
-						}
-						return responseText;
-
-					}
-
-					@Override
-					protected String doInBackground(String... params) {
-						return sendMessage(params[0], params[1]);
-					}
-
-					@Override
-					protected void onPostExecute(String result) {
-						Auth myAuth = new Auth(mainActivityContext.userId, null);
-
-						String msg = gson.toJson(myAuth);
-
-						for (int i = 0; i < mainActivityContext.circleList
-								.size(); i++)
-							mainActivityContext.circleList.get(i).remove();
-
-						Area[] og = gson.fromJson(result, Area[].class);
-
-						// Area[] og = null;
-						// Object x = request.execute(msg, "synch");
-
-						for (int i = 0; i < og.length; i++) {
-
-							LatLng point = new LatLng(og[i].getLatitude(),
-									og[i].getLongitude());
-
-							CircleOptions circleOptions = new CircleOptions()
-									.center(point).radius(og[i].getRadius());
-
-							Circle circle = mainActivityContext.map
-									.addCircle(circleOptions);
-
-							mainActivityContext.circleList.add(circle);
-
-						}
-
-						Toast.makeText(mainActivityContext, result,
-								Toast.LENGTH_LONG).show();
-					}
-
-				}
+				// class SendSynchRequest extends AsyncTask<String, Void,
+				// String> {
+				//
+				// // private Gson gson = new GsonBuilder().create();
+				// // String data = gson.toJson(message);
+				//
+				// private String sendMessage(String message, String address) {
+				// String url = "http://192.168.1.7:8080/MSS/" + address;
+				//
+				// HttpPost post = new HttpPost(url);
+				//
+				// List<NameValuePair> nameValuePairs = new
+				// ArrayList<NameValuePair>(
+				// 1);
+				// nameValuePairs.add(new BasicNameValuePair("report",
+				// message));
+				//
+				// try {
+				// post.setEntity(new UrlEncodedFormEntity(
+				// nameValuePairs));
+				// } catch (UnsupportedEncodingException e) {
+				// System.out
+				// .println("Your url encoding is shiat fail");
+				// e.printStackTrace();
+				// }
+				//
+				// HttpClient client = new DefaultHttpClient();
+				// HttpResponse response = null;
+				// try {
+				// response = client.execute(post);
+				// } catch (ClientProtocolException e) {
+				// // TODO Auto-generated catch block
+				// e.printStackTrace();
+				// } catch (IOException e) {
+				// // TODO Auto-generated catch block
+				// e.printStackTrace();
+				// }
+				// HttpEntity entity = response.getEntity();
+				//
+				// String responseText = "";
+				// try {
+				// responseText = EntityUtils.toString(entity);
+				// } catch (ParseException e) {
+				// // TODO Auto-generated catch block
+				// e.printStackTrace();
+				// } catch (IOException e) {
+				// // TODO Auto-generated catch block
+				// e.printStackTrace();
+				// }
+				// return responseText;
+				//
+				// }
+				//
+				// @Override
+				// protected String doInBackground(String... params) {
+				// return sendMessage(params[0], params[1]);
+				// }
+				//
+				// @Override
+				// protected void onPostExecute(String result) {
+				// Auth myAuth = new Auth(mainActivityContext.userId, null);
+				//
+				// String msg = gson.toJson(myAuth);
+				//
+				// for (int i = 0; i < mainActivityContext.circleList
+				// .size(); i++)
+				// mainActivityContext.circleList.get(i).remove();
+				//
+				// Area[] og = gson.fromJson(result, Area[].class);
+				//
+				// // Area[] og = null;
+				// // Object x = request.execute(msg, "synch");
+				//
+				// for (int i = 0; i < og.length; i++) {
+				//
+				// LatLng point = new LatLng(og[i].getLatitude(),
+				// og[i].getLongitude());
+				//
+				// CircleOptions circleOptions = new CircleOptions()
+				// .center(point).radius(og[i].getRadius());
+				//
+				// Circle circle = mainActivityContext.map
+				// .addCircle(circleOptions);
+				//
+				// mainActivityContext.circleList.add(circle);
+				//
+				// }
+				//
+				// Toast.makeText(mainActivityContext, result,
+				// Toast.LENGTH_LONG).show();
+				// }
+				//
+				// }
 
 			}
 		});

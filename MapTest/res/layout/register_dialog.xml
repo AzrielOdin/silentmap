@@ -25,16 +25,22 @@
     </EditText>
 
     <Button
+        android:id="@+id/register"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Register" />
+
+    <Button
         android:id="@+id/saveCircles"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="Save" />
+        android:text="Save Areas" />
 
     <Button
         android:id="@+id/deleteCircles"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="Delete" />
+        android:text="Delete Areas" />
 
     <Button
         android:id="@+id/synch"
