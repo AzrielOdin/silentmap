@@ -138,9 +138,22 @@ public class DbController extends SQLiteOpenHelper implements
 	}
 
 	@Override
-	public void deleteAreas(ArrayList<String> CircleHashList) {
-		// TODO Auto-generated method stub
+	public int deleteAreas(ArrayList<String> CircleHashList) {
+		int result = 0;
+		SQLiteDatabase db = getReadableDatabase();
+		db.beginTransaction();
+		try {
+			for (int i = 0; i < CircleHashList.size(); i++) {
+				result += db.delete(TABLE_AREAS, KEY_CIRCLE_HASH + " = ?",
+						new String[] { CircleHashList.get(i) });
 
+			}
+
+			db.setTransactionSuccessful();
+		} finally {
+			db.endTransaction();
+		}
+		return result;
 	}
 
 	@Override
