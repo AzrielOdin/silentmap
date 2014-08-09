@@ -138,14 +138,14 @@ public class DbController extends SQLiteOpenHelper implements
 	}
 
 	@Override
-	public int deleteAreas(ArrayList<String> CircleHashList) {
+	public int deleteAreas(ArrayList<Area> CircleHashList) {
 		int result = 0;
 		SQLiteDatabase db = getReadableDatabase();
 		db.beginTransaction();
 		try {
 			for (int i = 0; i < CircleHashList.size(); i++) {
 				result += db.delete(TABLE_AREAS, KEY_CIRCLE_HASH + " = ?",
-						new String[] { CircleHashList.get(i) });
+						new String[] { CircleHashList.get(i).getCircle_hash() });
 
 			}
 

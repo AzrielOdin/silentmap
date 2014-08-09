@@ -334,14 +334,8 @@ public class RegisterDialog extends DialogFragment implements
 				//
 				// }
 				//
-				// String msg = gson.toJson(mainActivityContext
-				// .generateSavePayload(mainActivityContext.userId,
-				// mainActivityContext.userPassword));
-				//
-				// new SendDeleteRequest().execute(msg, "save");
-				// for (int i = 0; i < mainActivityContext.circleList.size();
-				// i++)
-				// mainActivityContext.circleList.get(i).remove();
+
+				mainActivityContext.dbController.deleteAllAreas();
 
 			}
 		});
@@ -411,36 +405,34 @@ public class RegisterDialog extends DialogFragment implements
 				//
 				// @Override
 				// protected void onPostExecute(String result) {
-				// Auth myAuth = new Auth(mainActivityContext.userId, null);
-				//
-				// String msg = gson.toJson(myAuth);
-				//
-				// for (int i = 0; i < mainActivityContext.circleList
-				// .size(); i++)
-				// mainActivityContext.circleList.get(i).remove();
-				//
-				// Area[] og = gson.fromJson(result, Area[].class);
-				//
-				// // Area[] og = null;
-				// // Object x = request.execute(msg, "synch");
-				//
-				// for (int i = 0; i < og.length; i++) {
-				//
-				// LatLng point = new LatLng(og[i].getLatitude(),
-				// og[i].getLongitude());
-				//
-				// CircleOptions circleOptions = new CircleOptions()
-				// .center(point).radius(og[i].getRadius());
-				//
-				// Circle circle = mainActivityContext.map
-				// .addCircle(circleOptions);
-				//
-				// mainActivityContext.circleList.add(circle);
-				//
-				// }
-				//
-				// Toast.makeText(mainActivityContext, result,
-				// Toast.LENGTH_LONG).show();
+
+				mainActivityContext.areaList = mainActivityContext.dbController
+						.getAreas();
+
+				// Area[] og = null;
+				// Object x = request.execute(msg, "synch");
+
+				int areaListSize = mainActivityContext.areaList.size();
+
+				for (int i = 0; i < areaListSize; i++) {
+
+					Area tempArea = mainActivityContext.areaList.get(i);
+
+					LatLng point = new LatLng(tempArea.getLatitude(), tempArea
+							.getLongitude());
+
+					CircleOptions circleOptions = new CircleOptions().center(
+							point).radius(tempArea.getRadius());
+
+					Circle circle = mainActivityContext.map
+							.addCircle(circleOptions);
+
+					mainActivityContext.circleList.add(circle);
+
+				}
+
+//				Toast.makeText(mainActivityContext, result, Toast.LENGTH_LONG)
+//						.show();
 				// }
 				//
 				// }

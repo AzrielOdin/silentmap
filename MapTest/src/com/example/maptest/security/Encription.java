@@ -99,6 +99,7 @@ public class Encription {
 	 */
 	public synchronized String encode(String password, String saltKey)
 			throws NoSuchAlgorithmException, IOException {
+		Log.i("encription", saltKey);
 		byte[] salt = base64ToByte(saltKey);
 
 		return encode(password, salt);
@@ -110,8 +111,9 @@ public class Encription {
 	 * @throws IOException
 	 */
 	private byte[] base64ToByte(String str) throws IOException {
-
-		byte[] returnbyteArray = Base64.decode(str.getBytes(), Base64.DEFAULT);
+		
+		Log.i("encription", str);
+		byte[] returnbyteArray = Base64.decode(str, Base64.URL_SAFE);
 		
 		
 

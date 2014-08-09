@@ -12,7 +12,7 @@ public interface DbControllerInterface {
 
 	public void updateAreas(ArrayList<Area> areas);
 
-	public int deleteAreas(ArrayList<String> CircleHashList);
+	public int deleteAreas(ArrayList<Area> CircleHashList);
 
 	public void deleteAllAreas();
 }
