@@ -40,15 +40,12 @@ import com.google.android.gms.maps.model.LatLng;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 
-public class RegisterDialog extends DialogFragment implements
-		OnEditorActionListener {
+public class RegisterDialog extends DialogFragment {
 
 	Button registerUser;
 	Button saveCircles;
 	Button deleteCircles;
-	Button synch;
-	EditText userId;
-	EditText userPassword; // make the interface GUI gurl
+	Button loadCircles;
 
 	Gson gson = new GsonBuilder().create();
 
@@ -64,31 +61,16 @@ public class RegisterDialog extends DialogFragment implements
 	public View onCreateView(LayoutInflater inflater, ViewGroup container,
 			Bundle savedInstanceState) {
 		View view = inflater.inflate(R.layout.register_dialog, container);
-		userId = (EditText) view.findViewById(R.id.username);
-		userPassword = (EditText) view.findViewById(R.id.password);
+
 		// String userIdString = userId.getText().toString();
 		// String userPassWordString = userPassword.getText().toString();
 		registerUser = (Button) view.findViewById(R.id.register);
 		saveCircles = (Button) view.findViewById(R.id.saveCircles);
 		deleteCircles = (Button) view.findViewById(R.id.deleteCircles);
-		synch = (Button) view.findViewById(R.id.synch);
+		loadCircles = (Button) view.findViewById(R.id.load);
 		getDialog().setTitle("Account Settings");
 		final MainActivity mainActivityContext = (MainActivity) getActivity();
 		// Show soft keyboard automatically
-		userId.requestFocus();
-		userId.setOnEditorActionListener(this);
-
-		if (mainActivityContext.userId != null) {
-			userId.setText(mainActivityContext.userId);
-		} else {
-			userId.setText("");
-		}
-
-		if (mainActivityContext.userPassword != null) {
-			userPassword.setText(mainActivityContext.userPassword);
-		} else {
-			userPassword.setText("");
-		}
 
 		registerUser.setOnClickListener(new View.OnClickListener() {
 
@@ -340,7 +322,7 @@ public class RegisterDialog extends DialogFragment implements
 			}
 		});
 
-		synch.setOnClickListener(new View.OnClickListener() {
+		loadCircles.setOnClickListener(new View.OnClickListener() {
 
 			@Override
 			public void onClick(View v) {
@@ -431,8 +413,9 @@ public class RegisterDialog extends DialogFragment implements
 
 				}
 
-//				Toast.makeText(mainActivityContext, result, Toast.LENGTH_LONG)
-//						.show();
+				// Toast.makeText(mainActivityContext, result,
+				// Toast.LENGTH_LONG)
+				// .show();
 				// }
 				//
 				// }
@@ -441,23 +424,6 @@ public class RegisterDialog extends DialogFragment implements
 		});
 
 		return view;
-	}
-
-	@Override
-	public boolean onEditorAction(TextView v, int actionId, KeyEvent event) {
-
-		if (EditorInfo.IME_ACTION_DONE == actionId) {
-			EditNameDialogListener activity = (EditNameDialogListener) getActivity();
-			activity.onFinishEditDialog(userId.getText().toString(),
-					userPassword.getText().toString()); // C:
-
-			final MainActivity xxx = (MainActivity) getActivity();
-			xxx.userId = userId.getText().toString();
-			this.dismiss();
-
-			return true;
-		}
-		return false;
 	}
 
 }

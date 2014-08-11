@@ -113,7 +113,8 @@ public class Encription {
 	private byte[] base64ToByte(String str) throws IOException {
 		
 		Log.i("encription", str);
-		byte[] returnbyteArray = Base64.decode(str, Base64.URL_SAFE);
+		byte[] strByte = str.getBytes();
+		byte[] returnbyteArray = Base64.encode(strByte, Base64.URL_SAFE);
 		
 		
 
