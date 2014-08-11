@@ -73,6 +73,9 @@ public class Area {
 	}
 
 	public void setSynchStatus(int synchStatus) {
+		if ((synchStatus > 2) || (synchStatus < 0)) {
+			throw new InvalidParameterException();
+		}
 		this.synchStatus = synchStatus;
 	}
 
