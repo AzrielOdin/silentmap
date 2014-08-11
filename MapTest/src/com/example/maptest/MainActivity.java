@@ -27,9 +27,6 @@ import android.widget.Toast;
 import com.example.maptest.AreaCreateDialog.EditAreaDialogListener;
 import com.example.maptest.RegisterDialog.EditNameDialogListener;
 import com.example.maptest.json.Area;
-import com.example.maptest.json.Auth;
-import com.example.maptest.json.Data;
-import com.example.maptest.json.GeneralRequest;
 import com.example.maptest.json.Settings;
 import com.example.maptest.localStorage.DbController;
 import com.example.maptest.security.Encription;
@@ -251,25 +248,26 @@ public class MainActivity extends Activity implements EditNameDialogListener,
 		return circleHash;
 	}
 
-	public GeneralRequest generateSavePayload(ArrayList<Area> areas, String id,
-			String password) {
-
-		Auth myAuth = new Auth(id, password);
-		Data myData = new Data("save", areas);
-		GeneralRequest myGeneralRequest = new GeneralRequest(myAuth, myData);
-
-		return myGeneralRequest;
-	}
-
-	public GeneralRequest generateSavePayload(String id, String password) {
-
-		ArrayList<Area> emptyArea = new ArrayList<Area>();
-		Auth myAuth = new Auth(id, password);
-		Data myData = new Data("delete", emptyArea);
-		GeneralRequest myGeneralRequest = new GeneralRequest(myAuth, myData);
-
-		return myGeneralRequest;
-	}
+	// public GeneralRequest generateSavePayload(ArrayList<Area> areas, String
+	// id,
+	// String password) {
+	//
+	// Auth myAuth = new Auth(id, password);
+	// Data myData = new Data("save", areas);
+	// GeneralRequest myGeneralRequest = new GeneralRequest(myAuth, myData);
+	//
+	// return myGeneralRequest;
+	// }
+	//
+	// public GeneralRequest generateSavePayload(String id, String password) {
+	//
+	// ArrayList<Area> emptyArea = new ArrayList<Area>();
+	// Auth myAuth = new Auth(id, password);
+	// Data myData = new Data("delete", emptyArea);
+	// GeneralRequest myGeneralRequest = new GeneralRequest(myAuth, myData);
+	//
+	// return myGeneralRequest;
+	// }
 
 	@Override
 	protected void onStart() {
@@ -392,7 +390,7 @@ public class MainActivity extends Activity implements EditNameDialogListener,
 					circleOptionsCenter.longitude, (int) circleOptions
 							.getRadius(), this
 							.calculateCircleHash(circleOptionsCenter),
-					new Settings(1, 1)));
+					new Settings(1, 1), 2));
 			Toast.makeText(getApplicationContext(), "New Area Added",
 					Toast.LENGTH_LONG).show();
 		} else {

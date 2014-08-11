@@ -1,40 +1,31 @@
 package com.example.maptest.json;
 
+import java.security.InvalidParameterException;
+
 public class Area {
-	private String user;
 	private String circle_hash;
 	private double latitude;
 	private double longitude;
 	private int radius;
 	private Settings settings;
+	private int synchStatus;
 
-	public Area(String user, double latitude, double longitude, int radius,
-			String circle_hash, Settings settings) {
-		super();
-		this.user = user;
-		this.circle_hash = circle_hash;
-		this.latitude = latitude;
-		this.longitude = longitude;
-		this.radius = radius;
-		this.settings = settings;
-	}
+	// 0 - area is from database
+	// 1 - area is from database but has been modified in app
+	// 2 - area has been created in app but not saved in db yet
 
 	public Area(double latitude, double longitude, int radius,
-			String circle_hash, Settings settings) {
+			String circle_hash, Settings settings, int synchStatus) {
 		super();
+		if ((synchStatus > 2) || (synchStatus < 0)) {
+			throw new InvalidParameterException();
+		}
 		this.circle_hash = circle_hash;
 		this.latitude = latitude;
 		this.longitude = longitude;
 		this.radius = radius;
 		this.settings = settings;
-	}
-
-	public String getUser() {
-		return user;
-	}
-
-	public void setUser(String user) {
-		this.user = user;
+		this.synchStatus = synchStatus;
 	}
 
 	public String getCircle_hash() {
@@ -76,4 +67,13 @@ public class Area {
 	public void setSettings(Settings settings) {
 		this.settings = settings;
 	}
+
+	public int getSynchStatus() {
+		return synchStatus;
+	}
+
+	public void setSynchStatus(int synchStatus) {
+		this.synchStatus = synchStatus;
+	}
+
 }

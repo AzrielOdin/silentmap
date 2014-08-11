@@ -71,7 +71,7 @@ public class DbController extends SQLiteOpenHelper implements
 		while (!cursor.isAfterLast()) {
 			Area temp = new Area(cursor.getDouble(0), cursor.getDouble(1),
 					cursor.getInt(2), cursor.getString(3), new Settings(
-							cursor.getInt(4), cursor.getInt(5)));
+							cursor.getInt(4), cursor.getInt(5)), 0);
 
 			areas.add(temp);
 			cursor.moveToNext();
@@ -119,13 +119,22 @@ public class DbController extends SQLiteOpenHelper implements
 		db.beginTransaction();
 		try {
 			for (int i = index; i < areas.size(); i++) {
-				Area curArea = areas.get(i);
-				ContentValues values = new ContentValues();
-				values.put(KEY_LATITUDE, curArea.getRadius());
-				values.put(KEY_SILENT, curArea.getSettings().isSilent());
-				values.put(KEY_VIBRATE, curArea.getSettings().isVibrate());
-				db.update(TABLE_AREAS, values,
-						"WHERE circle_hash =" + curArea.getCircle_hash(), null);
+				if (areas.get(i).getSynchStatus() == 1) {
+					Area curArea = areas.get(i);
+					ContentValues values = new ContentValues();
+					values.put(KEY_LATITUDE, curArea.getRadius());
+					values.put(KEY_SILENT, curArea.getSettings().isSilent());
+					values.put(KEY_VIBRATE, curArea.getSettings().isVibrate());
+					db.update(TABLE_AREAS, values, "WHERE circle_hash ="
+							+ curArea.getCircle_hash(), null);
+				} else if (areas.get(i).getSynchStatus() == 2) {
+					Area curArea = areas.get(i);
+					ContentValues values = new ContentValues();
+					values.put(KEY_LATITUDE, curArea.getRadius());
+					values.put(KEY_SILENT, curArea.getSettings().isSilent());
+					values.put(KEY_VIBRATE, curArea.getSettings().isVibrate());
+					db.insert(TABLE_AREAS, null, values);
+				}
 				index++;
 				// In case you do larger updates
 				db.yieldIfContendedSafely();
@@ -144,8 +153,10 @@ public class DbController extends SQLiteOpenHelper implements
 		db.beginTransaction();
 		try {
 			for (int i = 0; i < CircleHashList.size(); i++) {
-				result += db.delete(TABLE_AREAS, KEY_CIRCLE_HASH + " = ?",
-						new String[] { CircleHashList.get(i).getCircle_hash() });
+				result += db
+						.delete(TABLE_AREAS, KEY_CIRCLE_HASH + " = ?",
+								new String[] { CircleHashList.get(i)
+										.getCircle_hash() });
 
 			}
 
