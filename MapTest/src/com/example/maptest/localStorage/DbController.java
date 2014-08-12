@@ -169,7 +169,7 @@ public class DbController extends SQLiteOpenHelper implements
 
 	@Override
 	public void deleteAllAreas() {
-		String query = "TRUNCATE TABLE areas";
+		String query = "DELETE FROM areas;";
 		getReadableDatabase().rawQuery(query, new String[] {});
 
 	}
