@@ -16,6 +16,7 @@ import com.google.gson.GsonBuilder;
 
 public class RegisterDialog extends DialogFragment {
 
+	final MainActivity mainActivityContext = (MainActivity) getActivity();
 	Button registerUser;
 	Button saveCircles;
 	Button deleteCircles;
@@ -31,6 +32,14 @@ public class RegisterDialog extends DialogFragment {
 		// Empty constructor required for DialogFragment
 	}
 
+	private void softDeleteCircles() {
+		while (mainActivityContext.circleList.size() != 0) {
+			mainActivityContext.circleList.get(0).remove();
+			mainActivityContext.circleList.remove(0);
+			mainActivityContext.areaList.remove(0);
+		}
+	}
+
 	@Override
 	public View onCreateView(LayoutInflater inflater, ViewGroup container,
 			Bundle savedInstanceState) {
@@ -41,7 +50,6 @@ public class RegisterDialog extends DialogFragment {
 		deleteCircles = (Button) view.findViewById(R.id.deleteCircles);
 		loadCircles = (Button) view.findViewById(R.id.load);
 		getDialog().setTitle("Account Settings");
-		final MainActivity mainActivityContext = (MainActivity) getActivity();
 		// Show soft keyboard automatically
 
 		saveCircles.setOnClickListener(new View.OnClickListener() {
@@ -61,11 +69,7 @@ public class RegisterDialog extends DialogFragment {
 			public void onClick(View v) {
 
 				mainActivityContext.dbController.deleteAllAreas();
-				while (mainActivityContext.circleList.size() != 0) {
-					mainActivityContext.circleList.get(0).remove();
-					mainActivityContext.circleList.remove(0);
-					mainActivityContext.areaList.remove(0);
-				}
+				softDeleteCircles();
 			}
 		});
 
@@ -73,6 +77,9 @@ public class RegisterDialog extends DialogFragment {
 
 			@Override
 			public void onClick(View v) {
+				softDeleteCircles();
+				mainActivityContext.areaList = mainActivityContext.dbController
+						.getAreas();
 
 				int areaListSize = mainActivityContext.areaList.size();
 
