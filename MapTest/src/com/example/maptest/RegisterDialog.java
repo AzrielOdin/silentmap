@@ -11,18 +11,14 @@ import com.example.maptest.json.Area;
 import com.google.android.gms.maps.model.Circle;
 import com.google.android.gms.maps.model.CircleOptions;
 import com.google.android.gms.maps.model.LatLng;
-import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
 
 public class RegisterDialog extends DialogFragment {
 
-	final MainActivity mainActivityContext = (MainActivity) getActivity();
+	private MainActivity mainActivityContext = (MainActivity) getActivity();
 	Button registerUser;
 	Button saveCircles;
 	Button deleteCircles;
 	Button loadCircles;
-
-	Gson gson = new GsonBuilder().create();
 
 	public interface EditNameDialogListener {
 		void onFinishEditDialog(String inputTextId, String inTextPassword);
@@ -44,7 +40,7 @@ public class RegisterDialog extends DialogFragment {
 	public View onCreateView(LayoutInflater inflater, ViewGroup container,
 			Bundle savedInstanceState) {
 		View view = inflater.inflate(R.layout.register_dialog, container);
-
+		mainActivityContext = (MainActivity) getActivity();
 		registerUser = (Button) view.findViewById(R.id.register);
 		saveCircles = (Button) view.findViewById(R.id.saveCircles);
 		deleteCircles = (Button) view.findViewById(R.id.deleteCircles);
