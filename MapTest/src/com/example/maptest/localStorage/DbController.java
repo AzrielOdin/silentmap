@@ -122,7 +122,7 @@ public class DbController extends SQLiteOpenHelper implements
 				if (areas.get(i).getSynchStatus() == 1) {
 					Area curArea = areas.get(i);
 					ContentValues values = new ContentValues();
-					values.put(KEY_LATITUDE, curArea.getRadius());
+					values.put(KEY_RADIUS, curArea.getRadius());
 					values.put(KEY_SILENT, curArea.getSettings().isSilent());
 					values.put(KEY_VIBRATE, curArea.getSettings().isVibrate());
 					db.update(TABLE_AREAS, values, "WHERE circle_hash ="
@@ -130,7 +130,10 @@ public class DbController extends SQLiteOpenHelper implements
 				} else if (areas.get(i).getSynchStatus() == 2) {
 					Area curArea = areas.get(i);
 					ContentValues values = new ContentValues();
-					values.put(KEY_LATITUDE, curArea.getRadius());
+					values.put(KEY_LATITUDE, curArea.getLatitude());
+					values.put(KEY_LONGITUDE, curArea.getLongitude());
+					values.put(KEY_CIRCLE_HASH, curArea.getCircle_hash());
+					values.put(KEY_RADIUS, curArea.getRadius());
 					values.put(KEY_SILENT, curArea.getSettings().isSilent());
 					values.put(KEY_VIBRATE, curArea.getSettings().isVibrate());
 					db.insert(TABLE_AREAS, null, values);
