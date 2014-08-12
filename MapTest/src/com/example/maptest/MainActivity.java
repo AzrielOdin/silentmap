@@ -248,26 +248,6 @@ public class MainActivity extends Activity implements EditNameDialogListener,
 		return circleHash;
 	}
 
-	// public GeneralRequest generateSavePayload(ArrayList<Area> areas, String
-	// id,
-	// String password) {
-	//
-	// Auth myAuth = new Auth(id, password);
-	// Data myData = new Data("save", areas);
-	// GeneralRequest myGeneralRequest = new GeneralRequest(myAuth, myData);
-	//
-	// return myGeneralRequest;
-	// }
-	//
-	// public GeneralRequest generateSavePayload(String id, String password) {
-	//
-	// ArrayList<Area> emptyArea = new ArrayList<Area>();
-	// Auth myAuth = new Auth(id, password);
-	// Data myData = new Data("delete", emptyArea);
-	// GeneralRequest myGeneralRequest = new GeneralRequest(myAuth, myData);
-	//
-	// return myGeneralRequest;
-	// }
 
 	@Override
 	protected void onStart() {
