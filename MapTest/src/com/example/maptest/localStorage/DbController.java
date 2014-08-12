@@ -172,8 +172,7 @@ public class DbController extends SQLiteOpenHelper implements
 
 	@Override
 	public void deleteAllAreas() {
-		String query = "DELETE FROM " + TABLE_AREAS;
-		getReadableDatabase().rawQuery(query, new String[] {});
+		getReadableDatabase().delete(TABLE_AREAS, null, null);
 
 	}
 }
